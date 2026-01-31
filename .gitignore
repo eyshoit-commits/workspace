@@ -18,3 +18,4 @@ workspace/
 /config/
 temp/
 
+node_modules
