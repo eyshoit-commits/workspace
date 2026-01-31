@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "nvidia/meta/llama-3.3-70b-instruct",
+  "plugins": [
+    "opencode-antigravity-auth@1.4.3",
+    "file:///home/wind/.config/opencode/node_modules/opencode-mem/dist/plugin.js",
+    "file:///home/wind/.config/opencode/node_modules/@howaboua/opencode-roadmap-plugin/dist/index.js",
+    "file:///home/wind/.config/opencode/plugin/pocket-universe/dist/index.js",
+    "@knikolov/opencode-plugin-simple-memory",
+    "opencode-froggy",
+    "file:///home/wind/.config/opencode/plugin/opencode-devcontainers/plugin/index.js",
+    "file:///home/wind/.config/opencode/plugin/oh-my-opencode/dist/index.js"
+  ]
+}
