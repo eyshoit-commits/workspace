@@ -1,26 +1,57 @@
-version: '3.8'
 services:
-  # Update this to the name of the service you want to work with in your docker-compose.yml file
   app:
-    # Uncomment if you want to override the service's Dockerfile to one in the .devcontainer 
-    # folder. Note that the path of the Dockerfile and context is relative to the *primary* 
-    # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
-    # array). The sample below assumes your primary file is in the root of your project.
-    #
-    # build:
-    #   context: .
-    #   dockerfile: .devcontainer/Dockerfile
-
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opencode-manager
+    ports:
+      - "5003:5003"
+      - "5100:5100"
+      - "5101:5101"
+      - "5102:5102"
+      - "5103:5103"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - HOST=0.0.0.0
+      - PORT=5003
+      - OPENCODE_SERVER_PORT=5551
+      - DATABASE_PATH=/app/data/opencode.db
+      - WORKSPACE_PATH=/workspace
+      - PROCESS_START_WAIT_MS=2000
+      - PROCESS_VERIFY_WAIT_MS=1000
+      - HEALTH_CHECK_INTERVAL_MS=5000
+      - HEALTH_CHECK_TIMEOUT_MS=30000
+      - MAX_FILE_SIZE_MB=50
+      - MAX_UPLOAD_SIZE_MB=50
+      - DEBUG=false
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_TRUSTED_ORIGINS=${AUTH_TRUSTED_ORIGINS:-http://localhost:5003}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - ADMIN_PASSWORD_RESET=${ADMIN_PASSWORD_RESET:-false}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID:-}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET:-}
+      - AUTH_SECURE_COOKIES=${AUTH_SECURE_COOKIES:-false}
+      - PASSKEY_RP_ID=${PASSKEY_RP_ID:-localhost}
+      - PASSKEY_RP_NAME=${PASSKEY_RP_NAME:-OpenCode Manager}
+      - PASSKEY_ORIGIN=${PASSKEY_ORIGIN:-http://localhost:5003}
     volumes:
-      # Update this to wherever you want VS Code to mount the folder of your project
-      - ..:/workspaces:cached
+      - opencode-workspace:/workspace
+      - opencode-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
 
-    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
-    # cap_add:
-    #   - SYS_PTRACE
-    # security_opt:
-    #   - seccomp:unconfined
-
-    # Overrides default command so things don't shut down after the process ends.
-    command: sleep infinity
- 
+volumes:
+  opencode-workspace:
+    driver: local
+  opencode-data:
+    driver: local
